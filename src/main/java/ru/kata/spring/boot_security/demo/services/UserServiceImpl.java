@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.roleService = roleService;
     }
-
+    @Transactional(readOnly = true)
     public User findByUsername(String username){
         return userRepository.findByUsername(username);
     }
