@@ -12,7 +12,7 @@ import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -31,11 +31,12 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.roleService = roleService;
     }
+
     public User findByUsername(String username){
         return userRepository.findByUsername(username);
     }
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = findByUsername(username);
         if(user == null) {
@@ -53,6 +54,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
+    @Transactional(readOnly = true)
     @Override
     public List<User> getAllUsers(){
         return userRepository.findAll();
@@ -66,10 +68,12 @@ public class UserServiceImpl implements UserDetailsService, UserService {
             throw new UsernameNotFoundException(String.format("User with %s not found", id));
         }
     }
+    @Transactional(readOnly = true)
     @Override
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
+    @Transactional
     @Override
     public void updateUser(int id, User user) {
         Optional<User> userToUpdate = userRepository.findById(id);
@@ -82,17 +86,11 @@ public class UserServiceImpl implements UserDetailsService, UserService {
             throw new UsernameNotFoundException(String.format("User %s with %s not found", user, id));
         }
     }
+    @Transactional
     @Override
     public void removeUserById(int id) { userRepository.deleteById(id);
     }
-
-    public void registration(User user){
-        Role role = new Role("ROLE_USER");
-        roleService.saveRole(role);
-        user.setRoles(Set.of(role));
-        saveUser(user);
-    }
-
+    @Transactional
     @Override
     public void createUser(User user, String stringRole) {
         Role role = new Role(stringRole);

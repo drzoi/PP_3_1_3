@@ -13,12 +13,9 @@ import java.security.Principal;
 @Controller
 public class UserController {
     private final UserService service;
-    private final RoleService roleService;
 
-    @Autowired
-    public UserController(UserService service, RoleService roleService) {
+    public UserController(UserService service) {
         this.service = service;
-        this.roleService = roleService;
     }
 
     @GetMapping("/user")
