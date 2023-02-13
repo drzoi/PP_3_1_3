@@ -8,6 +8,4 @@ public interface RoleService {
     List<Role> getRoles();
 
     void saveRole(Role roleAdmin);
-
-    void removeRoleById(int id);
 }
